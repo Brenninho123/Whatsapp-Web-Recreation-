@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>WhatsApp Simulação</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
 :root{
@@ -23,20 +23,14 @@
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;}
+html,body{height:100%; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; touch-action: manipulation;}
 body{overflow:hidden; transition:background 0.3s,color 0.3s}
 
 /* STATUS BAR */
-#statusbar{
-  height:24px; display:flex; justify-content:space-between; align-items:center;
-  padding:0 8px; font-size:12px; background:var(--panel-dark); color:var(--text-dark);
-}
+#statusbar{height:24px; display:flex; justify-content:space-between; align-items:center; padding:0 8px; font-size:12px; background:var(--panel-dark); color:var(--text-dark);}
 
 /* LOCK SCREEN */
-#lock{
-  position:fixed; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center;
-  background:linear-gradient(#000,var(--bg-dark)); text-align:center; z-index:10;
-}
+#lock{position:fixed; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(#000,var(--bg-dark)); text-align:center; z-index:10;}
 #lock h1{color:var(--out-dark); margin-bottom:6px;}
 #lock p{color:var(--muted-dark); font-size:14px;}
 #count{font-size:28px; color:#ff4d4d; margin:14px;}
@@ -53,7 +47,7 @@ body{overflow:hidden; transition:background 0.3s,color 0.3s}
 .actions{display:flex; gap:12px; font-size:18px; cursor:pointer;}
 
 /* LISTA DE CHATS */
-#list{height:100%; overflow-y:auto; background:var(--bg-dark);}
+#list{height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; background:var(--bg-dark);}
 .chat{display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--in-dark); cursor:pointer;}
 .chat:hover{background:var(--panel-dark);}
 .chat .meta{flex:1;}
@@ -63,10 +57,13 @@ body{overflow:hidden; transition:background 0.3s,color 0.3s}
 
 /* CHAT */
 #chatWrap{display:none; height:100%; background:var(--bg-dark); flex-direction:column;}
-#messages{padding:10px; overflow-y:auto; flex:1;}
+#messages{padding:10px; overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch;}
 .bubble{max-width:75%; padding:8px 12px; margin:6px 0; border-radius:10px; font-size:14px; line-height:1.35; color:white;}
 .in{background:var(--in-dark);}
 .out{background:var(--out-dark); margin-left:auto;}
+
+/* DIGITANDO */
+#typing{font-size:13px; color:var(--muted-dark); margin-left:5px; height:18px;}
 
 /* INPUT */
 #input{height:56px; background:var(--panel-dark); display:flex; align-items:center; gap:8px; padding:8px 10px;}
@@ -107,7 +104,7 @@ body{overflow:hidden; transition:background 0.3s,color 0.3s}
     <div class="avatar">👤</div>
     <div class="title">
       <b id="chatName">WhatsApp</b><br>
-      <small id="chatStatus">online</small>
+      <small id="chatStatus">online <span id="typing"></span></small>
     </div>
     <div class="actions">
       <span onclick="fakeCall()">📞</span>
@@ -158,7 +155,8 @@ function loadChats(){
     el.innerHTML=`<div class="avatar">👤</div>
       <div class="meta"><b>${c.n}</b><br><span>${c.m}</span></div>
       <time>${c.h}</time>`;
-    el.onclick=()=>openChat(c.n);
+    el.addEventListener('touchstart',()=>openChat(c.n));
+    el.addEventListener('click',()=>openChat(c.n));
     list.appendChild(el);
   });
 }
@@ -166,14 +164,28 @@ function loadChats(){
 /* OPEN CHAT */
 function openChat(name){
   document.getElementById('chatName').textContent=name;
-  document.getElementById('chatStatus').textContent='digitando…';
+  chatStatus.textContent='online';
+  typing.textContent='digitando…';
   document.getElementById('list').style.display='none';
   document.getElementById('chatWrap').style.display='flex';
   document.getElementById('messages').innerHTML='';
-  setTimeout(()=>document.getElementById('chatStatus').textContent='online',1000);
+  
+  // Mensagens automáticas simuladas
+  setTimeout(()=>{ addMsg("Olá! 😄","in"); typingDots(); },1200);
+  setTimeout(()=>{ addMsg("Como está seu dia?","in"); typingDots(); },2500);
+}
 
-  setTimeout(()=>addMsg("Olá! 😄","in"),1200);
-  setTimeout(()=>addMsg("Como está seu dia?","in"),2500);
+/* TYPING DOTS ANIMATION */
+let typingInterval;
+function typingDots(){
+  let dots=0;
+  clearInterval(typingInterval);
+  typingInterval=setInterval(()=>{
+    typing.textContent='digitando'+'.'.repeat(dots%4);
+    dots++;
+    if(dots>3) dots=0;
+  },400);
+  setTimeout(()=>{ clearInterval(typingInterval); typing.textContent=''; },3000);
 }
 
 /* SEND */
@@ -182,7 +194,7 @@ function send(){
   if(!input.value) return;
   addMsg(input.value,'out');
   input.value='';
-  setTimeout(()=>{ addMsg('Ok 👍','in'); vibrate(); },900);
+  setTimeout(()=>{ addMsg('Ok 👍','in'); typingDots(); vibrate(); },900);
 }
 function addMsg(t,type){
   const b=document.createElement('div');
