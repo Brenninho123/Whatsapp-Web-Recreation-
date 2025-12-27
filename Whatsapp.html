@@ -1,133 +1,117 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>WhatsApp</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 
 <style>
+/* ====== TOKENS (cores oficiais aproximadas) ====== */
+:root{
+  --bg:#0b141a;
+  --panel:#202c33;
+  --panel-2:#111b21;
+  --green:#25d366;
+  --green-dark:#005c4b;
+  --in:#1f2c33;
+  --text:#e9edef;
+  --muted:#8696a0;
+  --divider:#1f2c33;
+}
+
+/* ====== RESET ====== */
 *{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#000}
 body{
-  height:100vh;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:#000;color:#e9edef;
-  overflow:hidden
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  color:var(--text); overflow:hidden;
 }
 
-/* STATUS BAR */
+/* ====== STATUS BAR (fake) ====== */
 #statusbar{
-  height:24px;
-  background:#0b141a;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 8px;
-  font-size:12px
+  height:24px; background:var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 8px; font-size:12px;
 }
 
-/* LOCK */
+/* ====== LOCK (fake) ====== */
 #lock{
-  position:fixed;inset:0;
-  background:linear-gradient(#000,#0b141a);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
+  position:fixed; inset:0; z-index:10;
+  background:linear-gradient(#000,var(--bg));
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center;
-  z-index:10
 }
-#lock h1{color:#25d366;margin-bottom:6px}
-#lock p{color:#8696a0;font-size:14px}
-#count{font-size:30px;color:#ff4d4d;margin:15px}
+#lock h1{color:var(--green); margin-bottom:6px}
+#lock p{color:var(--muted); font-size:14px}
+#count{font-size:28px; color:#ff4d4d; margin:14px}
 #lock input{
-  padding:12px;width:220px;
-  border-radius:25px;border:none;text-align:center
+  width:220px; padding:12px; border-radius:999px; border:none; text-align:center;
 }
 #lock button{
-  margin-top:15px;
-  padding:12px 30px;
-  border-radius:25px;border:none;
-  background:#25d366;color:#000
+  margin-top:14px; padding:12px 28px; border-radius:999px; border:none;
+  background:var(--green); color:#000; font-weight:600;
 }
 
-/* APP */
-#app{
-  display:none;
-  flex-direction:column;
-  height:calc(100vh - 24px)
-}
-header{
-  background:#202c33;
-  padding:10px;
-  display:flex;
-  align-items:center;
-  gap:10px
+/* ====== APP ====== */
+#app{display:none; height:calc(100% - 24px); background:var(--bg)}
+.topbar{
+  background:var(--panel);
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
 }
 .avatar{
-  width:36px;height:36px;
-  border-radius:50%;
-  background:#25d366;
-  display:flex;align-items:center;justify-content:center
+  width:36px;height:36px;border-radius:50%;
+  background:var(--green); display:grid; place-items:center;
 }
-header small{color:#8696a0}
+.title{flex:1}
+.title b{font-size:16px}
+.title small{color:var(--muted)}
+.actions{display:flex; gap:12px; font-size:18px}
 
-/* LIST */
+/* ====== LISTA ====== */
 #list{
-  flex:1;
-  background:#0b141a;
-  overflow-y:auto
+  height:100%; overflow-y:auto; background:var(--bg);
 }
 .chat{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  border-bottom:1px solid #1f2c33
+  display:flex; gap:12px; padding:12px;
+  border-bottom:1px solid var(--divider);
 }
-.chat:hover{background:#111b21}
+.chat:hover{background:var(--panel-2)}
+.chat .meta{flex:1}
+.chat b{font-size:15px}
+.chat span{font-size:13px; color:var(--muted)}
+.chat time{font-size:11px; color:var(--muted)}
 
-/* CHAT */
-#chat{
-  display:none;
-  flex:1;
-  background:#0b141a;
-  padding:10px;
-  overflow-y:auto
+/* ====== CHAT ====== */
+#chatWrap{display:none; height:100%; background:var(--bg)}
+#messages{padding:10px; overflow-y:auto; height:calc(100% - 56px)}
+.bubble{
+  max-width:75%; padding:8px 12px; margin:6px 0; border-radius:10px;
+  font-size:14px; line-height:1.35;
 }
-.msg{
-  max-width:75%;
-  padding:8px 12px;
-  margin:6px 0;
-  border-radius:10px;
-  font-size:14px
-}
-.in{background:#1f2c33}
-.out{background:#005c4b;margin-left:auto}
+.in{background:var(--in)}
+.out{background:var(--green-dark); margin-left:auto}
 
-/* INPUT */
+/* ====== INPUT ====== */
 #input{
-  display:none;
-  gap:8px;
-  padding:10px;
-  background:#202c33
+  height:56px; background:var(--panel);
+  display:flex; align-items:center; gap:8px; padding:8px 10px;
 }
 #input input{
-  flex:1;padding:10px;
-  border-radius:20px;border:none
+  flex:1; padding:10px 14px; border-radius:999px; border:none;
 }
 #input button{
-  border:none;
-  background:#25d366;
-  border-radius:50%;
-  padding:0 16px
+  width:40px; height:40px; border-radius:50%;
+  border:none; background:var(--green); font-size:18px;
 }
 
-/* EFFECTS */
-.shake{animation:shake .3s}
+/* ====== EFEITOS ====== */
+.shake{animation:shake .25s}
 @keyframes shake{
   0%{transform:translate(0)}
-  25%{transform:translate(3px,-3px)}
-  50%{transform:translate(-3px,3px)}
-  75%{transform:translate(3px,3px)}
+  25%{transform:translate(2px,-2px)}
+  50%{transform:translate(-2px,2px)}
+  75%{transform:translate(2px,2px)}
   100%{transform:translate(0)}
 }
 </style>
@@ -137,114 +121,123 @@ header small{color:#8696a0}
 
 <div id="statusbar">
   <span id="clock">00:00</span>
-  <span>📶 LTE 🔋 92%</span>
+  <span>📶 LTE 🔋 94%</span>
 </div>
 
 <section id="lock">
   <h1>WhatsApp</h1>
-  <p>Verificando atividade suspeita…</p>
-  <div id="count">60</div>
-  <input placeholder="PIN">
+  <p>Verificação de segurança em andamento…</p>
+  <div id="count">45</div>
+  <input placeholder="PIN" type="password">
   <button onclick="unlock()">Verificar</button>
 </section>
 
 <section id="app">
-  <header>
+  <!-- TOPBAR -->
+  <div class="topbar">
     <div class="avatar">👤</div>
-    <div>
+    <div class="title">
       <b id="chatName">WhatsApp</b><br>
       <small id="chatStatus">online</small>
     </div>
-    <span onclick="fakeCall()">📞</span>
-  </header>
+    <div class="actions">
+      <span onclick="fakeCall()">📞</span>
+      <span>⋮</span>
+    </div>
+  </div>
 
+  <!-- LIST -->
   <div id="list"></div>
 
-  <div id="chat"></div>
-
-  <div id="input">
-    <input id="text" placeholder="Mensagem">
-    <button onclick="send()">➤</button>
+  <!-- CHAT -->
+  <div id="chatWrap">
+    <div id="messages"></div>
+    <div id="input">
+      <input id="text" placeholder="Mensagem">
+      <button onclick="send()">➤</button>
+    </div>
   </div>
 </section>
 
 <script>
-/* CLOCK */
+/* ===== CLOCK ===== */
 setInterval(()=>{
   const d=new Date();
   clock.textContent=
-    d.getHours().toString().padStart(2,"0")+":"+
-    d.getMinutes().toString().padStart(2,"0");
+    d.getHours().toString().padStart(2,'0')+':'+
+    d.getMinutes().toString().padStart(2,'0');
 },1000);
 
-/* COUNTDOWN */
-let t=60;
+/* ===== COUNTDOWN ===== */
+let t=45;
 setInterval(()=>{
-  if(t>0){
-    t--;
-    count.textContent=t;
-    shake();
-    if(navigator.vibrate) navigator.vibrate(80);
-  }
+  if(t>0){ t--; count.textContent=t; fx(); }
 },1000);
 
-/* UNLOCK */
+/* ===== UNLOCK ===== */
 function unlock(){
-  lock.style.display="none";
-  app.style.display="flex";
+  lock.style.display='none';
+  app.style.display='block';
   loadChats();
+  vib();
 }
 
-/* CHATS */
-const users=["Ana","Carlos","Família","Suporte"];
+/* ===== CHATS (fake) ===== */
+const chats=[
+  {n:'Ana', m:'Oi! Você viu isso?', h:'21:48'},
+  {n:'Carlos', m:'Chego em 5 min', h:'21:32'},
+  {n:'Família', m:'Boa noite!', h:'20:10'},
+  {n:'Suporte', m:'Chamado atualizado', h:'Ontem'}
+];
+
 function loadChats(){
-  list.innerHTML="";
-  users.forEach(u=>{
-    const c=document.createElement("div");
-    c.className="chat";
-    c.innerHTML=`<div class="avatar">👤</div>
-      <div><b>${u}</b><br><span>Mensagem recebida</span></div>`;
-    c.onclick=()=>openChat(u);
-    list.appendChild(c);
+  list.innerHTML='';
+  chats.forEach(c=>{
+    const el=document.createElement('div');
+    el.className='chat';
+    el.innerHTML=`
+      <div class="avatar">👤</div>
+      <div class="meta">
+        <b>${c.n}</b><br><span>${c.m}</span>
+      </div>
+      <time>${c.h}</time>`;
+    el.onclick=()=>openChat(c.n);
+    list.appendChild(el);
   });
 }
 
-/* OPEN CHAT */
+/* ===== OPEN CHAT ===== */
 function openChat(name){
   chatName.textContent=name;
-  list.style.display="none";
-  chat.style.display="block";
-  input.style.display="flex";
-  chat.innerHTML="";
-  chatStatus.textContent="digitando…";
-  setTimeout(()=>chatStatus.textContent="online",1000);
+  chatStatus.textContent='digitando…';
+  list.style.display='none';
+  chatWrap.style.display='block';
+  messages.innerHTML='';
+  setTimeout(()=>chatStatus.textContent='online',900);
 }
 
-/* SEND */
+/* ===== SEND ===== */
 function send(){
-  if(!text.value)return;
-  add(text.value,"out");
-  text.value="";
-  setTimeout(()=>add("Ok 👍","in"),800);
+  if(!text.value) return;
+  add(text.value,'out');
+  text.value='';
+  setTimeout(()=>{ add('Ok 👍','in'); vib(); },800);
 }
 function add(t,type){
-  const m=document.createElement("div");
-  m.className="msg "+type;
-  m.textContent=t;
-  chat.appendChild(m);
-  m.scrollIntoView();
+  const b=document.createElement('div');
+  b.className='bubble '+type;
+  b.textContent=t;
+  messages.appendChild(b);
+  messages.scrollTop=messages.scrollHeight;
 }
 
-/* CALL */
-function fakeCall(){
-  alert("📞 Chamada recebida (simulação)");
+/* ===== FX ===== */
+function vib(){ if(navigator.vibrate) navigator.vibrate(60); }
+function fx(){
+  document.body.classList.add('shake');
+  setTimeout(()=>document.body.classList.remove('shake'),200);
 }
-
-/* EFFECT */
-function shake(){
-  document.body.classList.add("shake");
-  setTimeout(()=>document.body.classList.remove("shake"),300);
-}
+function fakeCall(){ alert('📞 Chamada recebida (simulação)'); vib(); }
 </script>
 
 </body>
