@@ -4,7 +4,133 @@
 <meta charset="UTF-8">
 <title>WhatsApp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<link rel="stylesheet" href="css/style.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:#000;color:#e9edef;
+  overflow:hidden
+}
+
+/* STATUS BAR */
+#statusbar{
+  height:24px;
+  background:#0b141a;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 8px;
+  font-size:12px
+}
+
+/* LOCK */
+#lock{
+  position:fixed;inset:0;
+  background:linear-gradient(#000,#0b141a);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  z-index:10
+}
+#lock h1{color:#25d366;margin-bottom:6px}
+#lock p{color:#8696a0;font-size:14px}
+#count{font-size:30px;color:#ff4d4d;margin:15px}
+#lock input{
+  padding:12px;width:220px;
+  border-radius:25px;border:none;text-align:center
+}
+#lock button{
+  margin-top:15px;
+  padding:12px 30px;
+  border-radius:25px;border:none;
+  background:#25d366;color:#000
+}
+
+/* APP */
+#app{
+  display:none;
+  flex-direction:column;
+  height:calc(100vh - 24px)
+}
+header{
+  background:#202c33;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  gap:10px
+}
+.avatar{
+  width:36px;height:36px;
+  border-radius:50%;
+  background:#25d366;
+  display:flex;align-items:center;justify-content:center
+}
+header small{color:#8696a0}
+
+/* LIST */
+#list{
+  flex:1;
+  background:#0b141a;
+  overflow-y:auto
+}
+.chat{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  border-bottom:1px solid #1f2c33
+}
+.chat:hover{background:#111b21}
+
+/* CHAT */
+#chat{
+  display:none;
+  flex:1;
+  background:#0b141a;
+  padding:10px;
+  overflow-y:auto
+}
+.msg{
+  max-width:75%;
+  padding:8px 12px;
+  margin:6px 0;
+  border-radius:10px;
+  font-size:14px
+}
+.in{background:#1f2c33}
+.out{background:#005c4b;margin-left:auto}
+
+/* INPUT */
+#input{
+  display:none;
+  gap:8px;
+  padding:10px;
+  background:#202c33
+}
+#input input{
+  flex:1;padding:10px;
+  border-radius:20px;border:none
+}
+#input button{
+  border:none;
+  background:#25d366;
+  border-radius:50%;
+  padding:0 16px
+}
+
+/* EFFECTS */
+.shake{animation:shake .3s}
+@keyframes shake{
+  0%{transform:translate(0)}
+  25%{transform:translate(3px,-3px)}
+  50%{transform:translate(-3px,3px)}
+  75%{transform:translate(3px,3px)}
+  100%{transform:translate(0)}
+}
+</style>
 </head>
 
 <body>
@@ -14,16 +140,14 @@
   <span>📶 LTE 🔋 92%</span>
 </div>
 
-<!-- LOCK -->
 <section id="lock">
   <h1>WhatsApp</h1>
-  <p>Detectamos atividade suspeita.<br>Verificando integridade do sistema…</p>
+  <p>Verificando atividade suspeita…</p>
   <div id="count">60</div>
-  <input placeholder="Digite o PIN">
-  <button id="unlock">Verificar</button>
+  <input placeholder="PIN">
+  <button onclick="unlock()">Verificar</button>
 </section>
 
-<!-- APP -->
 <section id="app">
   <header>
     <div class="avatar">👤</div>
@@ -31,17 +155,97 @@
       <b id="chatName">WhatsApp</b><br>
       <small id="chatStatus">online</small>
     </div>
-    <span id="call">📞</span>
+    <span onclick="fakeCall()">📞</span>
   </header>
 
-  <main id="screen"></main>
+  <div id="list"></div>
 
-  <footer id="inputBox">
-    <input id="msg" placeholder="Mensagem">
-    <button id="send">➤</button>
-  </footer>
+  <div id="chat"></div>
+
+  <div id="input">
+    <input id="text" placeholder="Mensagem">
+    <button onclick="send()">➤</button>
+  </div>
 </section>
 
-<script src="js/app.js"></script>
+<script>
+/* CLOCK */
+setInterval(()=>{
+  const d=new Date();
+  clock.textContent=
+    d.getHours().toString().padStart(2,"0")+":"+
+    d.getMinutes().toString().padStart(2,"0");
+},1000);
+
+/* COUNTDOWN */
+let t=60;
+setInterval(()=>{
+  if(t>0){
+    t--;
+    count.textContent=t;
+    shake();
+    if(navigator.vibrate) navigator.vibrate(80);
+  }
+},1000);
+
+/* UNLOCK */
+function unlock(){
+  lock.style.display="none";
+  app.style.display="flex";
+  loadChats();
+}
+
+/* CHATS */
+const users=["Ana","Carlos","Família","Suporte"];
+function loadChats(){
+  list.innerHTML="";
+  users.forEach(u=>{
+    const c=document.createElement("div");
+    c.className="chat";
+    c.innerHTML=`<div class="avatar">👤</div>
+      <div><b>${u}</b><br><span>Mensagem recebida</span></div>`;
+    c.onclick=()=>openChat(u);
+    list.appendChild(c);
+  });
+}
+
+/* OPEN CHAT */
+function openChat(name){
+  chatName.textContent=name;
+  list.style.display="none";
+  chat.style.display="block";
+  input.style.display="flex";
+  chat.innerHTML="";
+  chatStatus.textContent="digitando…";
+  setTimeout(()=>chatStatus.textContent="online",1000);
+}
+
+/* SEND */
+function send(){
+  if(!text.value)return;
+  add(text.value,"out");
+  text.value="";
+  setTimeout(()=>add("Ok 👍","in"),800);
+}
+function add(t,type){
+  const m=document.createElement("div");
+  m.className="msg "+type;
+  m.textContent=t;
+  chat.appendChild(m);
+  m.scrollIntoView();
+}
+
+/* CALL */
+function fakeCall(){
+  alert("📞 Chamada recebida (simulação)");
+}
+
+/* EFFECT */
+function shake(){
+  document.body.classList.add("shake");
+  setTimeout(()=>document.body.classList.remove("shake"),300);
+}
+</script>
+
 </body>
 </html>
