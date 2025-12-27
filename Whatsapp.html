@@ -1,119 +1,91 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<title>WhatsApp</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta charset="UTF-8">
+<title>WhatsApp Simulação</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ====== TOKENS (cores oficiais aproximadas) ====== */
+/* ====== VARIÁVEIS ====== */
 :root{
-  --bg:#0b141a;
-  --panel:#202c33;
-  --panel-2:#111b21;
-  --green:#25d366;
-  --green-dark:#005c4b;
-  --in:#1f2c33;
-  --text:#e9edef;
-  --muted:#8696a0;
-  --divider:#1f2c33;
+  --bg-dark:#0b141a;
+  --panel-dark:#202c33;
+  --in-dark:#1f2c33;
+  --out-dark:#005c4b;
+  --text-dark:#e9edef;
+  --muted-dark:#8696a0;
+
+  --bg-light:#f0f0f0;
+  --panel-light:#e5e5e5;
+  --in-light:#d4f1ff;
+  --out-light:#b2e0a6;
+  --text-light:#111;
+  --muted-light:#555;
 }
 
 /* ====== RESET ====== */
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;background:#000}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  color:var(--text); overflow:hidden;
-}
+html,body{height:100%; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;}
+body{overflow:hidden; transition:background 0.3s,color 0.3s}
 
-/* ====== STATUS BAR (fake) ====== */
+/* ====== STATUS BAR ====== */
 #statusbar{
-  height:24px; background:var(--bg);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 8px; font-size:12px;
+  height:24px; display:flex; justify-content:space-between; align-items:center;
+  padding:0 8px; font-size:12px; background:var(--panel-dark); color:var(--text-dark);
 }
 
-/* ====== LOCK (fake) ====== */
+/* ====== LOCK ====== */
 #lock{
-  position:fixed; inset:0; z-index:10;
-  background:linear-gradient(#000,var(--bg));
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center;
+  position:fixed; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center;
+  background:linear-gradient(#000,var(--bg-dark)); text-align:center; z-index:10;
 }
-#lock h1{color:var(--green); margin-bottom:6px}
-#lock p{color:var(--muted); font-size:14px}
-#count{font-size:28px; color:#ff4d4d; margin:14px}
-#lock input{
-  width:220px; padding:12px; border-radius:999px; border:none; text-align:center;
-}
-#lock button{
-  margin-top:14px; padding:12px 28px; border-radius:999px; border:none;
-  background:var(--green); color:#000; font-weight:600;
-}
+#lock h1{color:var(--out-dark); margin-bottom:6px;}
+#lock p{color:var(--muted-dark); font-size:14px;}
+#count{font-size:28px; color:#ff4d4d; margin:14px;}
+#lock input{width:220px; padding:12px; border-radius:999px; border:none; text-align:center;}
+#lock button{margin-top:14px; padding:12px 28px; border-radius:999px; border:none; background:var(--out-dark); color:#000; font-weight:600; cursor:pointer;}
 
 /* ====== APP ====== */
-#app{display:none; height:calc(100% - 24px); background:var(--bg)}
-.topbar{
-  background:var(--panel);
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px;
-}
-.avatar{
-  width:36px;height:36px;border-radius:50%;
-  background:var(--green); display:grid; place-items:center;
-}
-.title{flex:1}
-.title b{font-size:16px}
-.title small{color:var(--muted)}
-.actions{display:flex; gap:12px; font-size:18px}
+#app{display:none; height:calc(100% - 24px); background:var(--bg-dark); flex-direction:column;}
+.topbar{background:var(--panel-dark); display:flex; align-items:center; gap:10px; padding:10px 12px;}
+.avatar{width:36px; height:36px; border-radius:50%; background:var(--out-dark); display:grid; place-items:center;}
+.title{flex:1;}
+.title b{font-size:16px;}
+.title small{color:var(--muted-dark);}
+.actions{display:flex; gap:12px; font-size:18px; cursor:pointer;}
 
 /* ====== LISTA ====== */
-#list{
-  height:100%; overflow-y:auto; background:var(--bg);
-}
-.chat{
-  display:flex; gap:12px; padding:12px;
-  border-bottom:1px solid var(--divider);
-}
-.chat:hover{background:var(--panel-2)}
-.chat .meta{flex:1}
-.chat b{font-size:15px}
-.chat span{font-size:13px; color:var(--muted)}
-.chat time{font-size:11px; color:var(--muted)}
+#list{height:100%; overflow-y:auto; background:var(--bg-dark);}
+.chat{display:flex; gap:12px; padding:12px; border-bottom:1px solid var(--in-dark); cursor:pointer;}
+.chat:hover{background:var(--panel-dark);}
+.chat .meta{flex:1;}
+.chat b{font-size:15px;}
+.chat span{font-size:13px; color:var(--muted-dark);}
+.chat time{font-size:11px; color:var(--muted-dark);}
 
 /* ====== CHAT ====== */
-#chatWrap{display:none; height:100%; background:var(--bg)}
-#messages{padding:10px; overflow-y:auto; height:calc(100% - 56px)}
-.bubble{
-  max-width:75%; padding:8px 12px; margin:6px 0; border-radius:10px;
-  font-size:14px; line-height:1.35;
-}
-.in{background:var(--in)}
-.out{background:var(--green-dark); margin-left:auto}
+#chatWrap{display:none; height:100%; background:var(--bg-dark); flex-direction:column;}
+#messages{padding:10px; overflow-y:auto; flex:1;}
+.bubble{max-width:75%; padding:8px 12px; margin:6px 0; border-radius:10px; font-size:14px; line-height:1.35;}
+.in{background:var(--in-dark);}
+.out{background:var(--out-dark); margin-left:auto;}
 
 /* ====== INPUT ====== */
-#input{
-  height:56px; background:var(--panel);
-  display:flex; align-items:center; gap:8px; padding:8px 10px;
-}
-#input input{
-  flex:1; padding:10px 14px; border-radius:999px; border:none;
-}
-#input button{
-  width:40px; height:40px; border-radius:50%;
-  border:none; background:var(--green); font-size:18px;
-}
+#input{height:56px; background:var(--panel-dark); display:flex; align-items:center; gap:8px; padding:8px 10px;}
+#input input{flex:1; padding:10px 14px; border-radius:999px; border:none;}
+#input button{width:40px; height:40px; border-radius:50%; border:none; background:var(--out-dark); font-size:18px; cursor:pointer;}
 
 /* ====== EFEITOS ====== */
-.shake{animation:shake .25s}
+.shake{animation:shake .25s;}
 @keyframes shake{
-  0%{transform:translate(0)}
-  25%{transform:translate(2px,-2px)}
-  50%{transform:translate(-2px,2px)}
-  75%{transform:translate(2px,2px)}
-  100%{transform:translate(0)}
+0%{transform:translate(0)}
+25%{transform:translate(2px,-2px)}
+50%{transform:translate(-2px,2px)}
+75%{transform:translate(2px,2px)}
+100%{transform:translate(0)}
 }
+.fade{animation:fade 0.4s;}
+@keyframes fade{from{opacity:0} to{opacity:1}}
 </style>
 </head>
 
@@ -121,19 +93,20 @@ body{
 
 <div id="statusbar">
   <span id="clock">00:00</span>
-  <span>📶 LTE 🔋 94%</span>
+  <span>📶 LTE 🔋 92%</span>
 </div>
 
+<!-- LOCK SCREEN -->
 <section id="lock">
   <h1>WhatsApp</h1>
-  <p>Verificação de segurança em andamento…</p>
+  <p>Verificando atividade suspeita…</p>
   <div id="count">45</div>
-  <input placeholder="PIN" type="password">
+  <input type="password" placeholder="PIN">
   <button onclick="unlock()">Verificar</button>
 </section>
 
+<!-- APP -->
 <section id="app">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="avatar">👤</div>
     <div class="title">
@@ -142,11 +115,11 @@ body{
     </div>
     <div class="actions">
       <span onclick="fakeCall()">📞</span>
-      <span>⋮</span>
+      <span onclick="toggleTheme()">🌙</span>
     </div>
   </div>
 
-  <!-- LIST -->
+  <!-- LISTA -->
   <div id="list"></div>
 
   <!-- CHAT -->
@@ -163,43 +136,33 @@ body{
 /* ===== CLOCK ===== */
 setInterval(()=>{
   const d=new Date();
-  clock.textContent=
-    d.getHours().toString().padStart(2,'0')+':'+
-    d.getMinutes().toString().padStart(2,'0');
+  clock.textContent=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
 },1000);
 
 /* ===== COUNTDOWN ===== */
 let t=45;
 setInterval(()=>{
-  if(t>0){ t--; count.textContent=t; fx(); }
+  if(t>0){ t--; document.getElementById('count').textContent=t; shakeEffect(); }
 },1000);
 
 /* ===== UNLOCK ===== */
 function unlock(){
-  lock.style.display='none';
-  app.style.display='block';
+  document.getElementById('lock').style.display='none';
+  document.getElementById('app').style.display='flex';
   loadChats();
-  vib();
+  vibrate();
 }
 
-/* ===== CHATS (fake) ===== */
-const chats=[
-  {n:'Ana', m:'Oi! Você viu isso?', h:'21:48'},
-  {n:'Carlos', m:'Chego em 5 min', h:'21:32'},
-  {n:'Família', m:'Boa noite!', h:'20:10'},
-  {n:'Suporte', m:'Chamado atualizado', h:'Ontem'}
-];
-
+/* ===== CHAT LIST ===== */
+const chats=[{n:'Ana',m:'Oi! Como vai?',h:'21:48'},{n:'Carlos',m:'Chego em 5 min',h:'21:32'},{n:'Família',m:'Boa noite!',h:'20:10'},{n:'Suporte',m:'Chamado atualizado',h:'Ontem'}];
 function loadChats(){
+  const list=document.getElementById('list');
   list.innerHTML='';
   chats.forEach(c=>{
     const el=document.createElement('div');
-    el.className='chat';
-    el.innerHTML=`
-      <div class="avatar">👤</div>
-      <div class="meta">
-        <b>${c.n}</b><br><span>${c.m}</span>
-      </div>
+    el.className='chat fade';
+    el.innerHTML=`<div class="avatar">👤</div>
+      <div class="meta"><b>${c.n}</b><br><span>${c.m}</span></div>
       <time>${c.h}</time>`;
     el.onclick=()=>openChat(c.n);
     list.appendChild(el);
@@ -208,36 +171,54 @@ function loadChats(){
 
 /* ===== OPEN CHAT ===== */
 function openChat(name){
-  chatName.textContent=name;
-  chatStatus.textContent='digitando…';
-  list.style.display='none';
-  chatWrap.style.display='block';
-  messages.innerHTML='';
-  setTimeout(()=>chatStatus.textContent='online',900);
+  document.getElementById('chatName').textContent=name;
+  document.getElementById('chatStatus').textContent='digitando…';
+  document.getElementById('list').style.display='none';
+  document.getElementById('chatWrap').style.display='flex';
+  document.getElementById('messages').innerHTML='';
+  setTimeout(()=>document.getElementById('chatStatus').textContent='online',1000);
+
+  // Mensagens automáticas simuladas
+  setTimeout(()=>addMsg("Olá! 😄","in"),1200);
+  setTimeout(()=>addMsg("Como está seu dia?","in"),2500);
 }
 
 /* ===== SEND ===== */
 function send(){
-  if(!text.value) return;
-  add(text.value,'out');
-  text.value='';
-  setTimeout(()=>{ add('Ok 👍','in'); vib(); },800);
+  const input=document.getElementById('text');
+  if(!input.value) return;
+  addMsg(input.value,'out');
+  input.value='';
+  setTimeout(()=>{ addMsg('Ok 👍','in'); vibrate(); },900);
 }
-function add(t,type){
+function addMsg(t,type){
   const b=document.createElement('div');
-  b.className='bubble '+type;
+  b.className='bubble '+type+' fade';
   b.textContent=t;
-  messages.appendChild(b);
-  messages.scrollTop=messages.scrollHeight;
+  const msg=document.getElementById('messages');
+  msg.appendChild(b);
+  msg.scrollTop=msg.scrollHeight;
 }
 
-/* ===== FX ===== */
-function vib(){ if(navigator.vibrate) navigator.vibrate(60); }
-function fx(){
-  document.body.classList.add('shake');
-  setTimeout(()=>document.body.classList.remove('shake'),200);
+/* ===== CALL ===== */
+function fakeCall(){ alert('📞 Chamada recebida (simulação)'); vibrate(); }
+
+/* ===== VIBRATION & SHAKE ===== */
+function vibrate(){ if(navigator.vibrate) navigator.vibrate([80,40,80]); }
+function shakeEffect(){ document.body.classList.add('shake'); setTimeout(()=>document.body.classList.remove('shake'),200); }
+
+/* ===== THEME TOGGLE ===== */
+let dark=true;
+function toggleTheme(){
+  dark=!dark;
+  if(dark){
+    document.body.style.background='var(--bg-dark)';
+    document.body.style.color='var(--text-dark)';
+  }else{
+    document.body.style.background='var(--bg-light)';
+    document.body.style.color='var(--text-light)';
+  }
 }
-function fakeCall(){ alert('📞 Chamada recebida (simulação)'); vib(); }
 </script>
 
 </body>
