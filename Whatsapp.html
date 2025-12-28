@@ -2,233 +2,251 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>WhatsApp Ultra</title>
+<title>WhatsApp Ultra (Simulação)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
 :root{
-  --bg:#0b141a;
-  --panel:#202c33;
-  --in:#1f2c33;
-  --out:#005c4b;
-  --text:#ffffff;
-  --muted:#8696a0;
-  --seen:#34b7f1;
-  --reply:#123f35;
+ --bg:#0b141a;--panel:#202c33;--in:#1f2c33;--out:#005c4b;
+ --text:#fff;--muted:#8696a0;--seen:#34b7f1;--accent:#25d366;
 }
-
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;background:var(--bg);font-family:system-ui;overflow:hidden;color:var(--text)}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui;overflow:hidden}
+button,input{border:none;outline:none}
 
-.top{
-  height:56px;background:var(--panel);
-  display:flex;align-items:center;gap:10px;padding:0 12px
-}
-.back{font-size:22px;display:none;cursor:pointer}
+/* TOP */
+.top{height:56px;background:var(--panel);display:flex;align-items:center;gap:10px;padding:0 12px}
+.back{display:none;font-size:22px;cursor:pointer}
 .avatar{width:38px;height:38px;border-radius:50%;background:var(--out);display:grid;place-items:center}
 .title{flex:1}
 .title b{font-size:16px}
 .title small{font-size:12px;color:var(--muted)}
+.actions{display:flex;gap:12px;font-size:18px}
 
-#list{height:calc(100% - 56px);overflow-y:auto}
+/* LIST */
+#tabs{display:flex;background:#111}
+#tabs button{flex:1;padding:10px;background:#111;color:#ccc}
+#tabs button.active{color:#fff;border-bottom:2px solid var(--accent)}
+#list,#status{height:calc(100% - 96px);overflow-y:auto}
 .chat{display:flex;gap:12px;padding:12px;border-bottom:1px solid #1a1a1a}
 .meta{flex:1}
 .meta b{font-size:15px}
-.meta span{font-size:13px;color:var(--text)}
+.meta span{font-size:13px}
 time{font-size:11px;color:var(--muted)}
 
+/* CHAT */
 #chat{display:none;height:calc(100% - 56px);flex-direction:column}
 #msgs{flex:1;padding:10px;overflow-y:auto}
-
-.msg{
-  max-width:75%;padding:8px 12px;margin:6px 0;
-  border-radius:10px;font-size:14px;color:white;
-  position:relative;transition:transform .15s
-}
+.msg{max-width:75%;padding:8px 12px;margin:6px 0;border-radius:10px;font-size:14px;color:white;position:relative}
 .in{background:var(--in)}
 .out{background:var(--out);margin-left:auto}
 .seen{font-size:10px;position:absolute;right:6px;bottom:2px;color:var(--seen)}
-
-.replyBox{
-  background:var(--reply);
-  border-left:3px solid #25d366;
-  padding:4px 8px;
-  font-size:12px;
-  margin-bottom:4px;
-  border-radius:6px
-}
-
+.replyBox{background:#123f35;border-left:3px solid var(--accent);padding:4px 8px;font-size:12px;margin-bottom:4px;border-radius:6px}
 .typing{font-size:12px;color:var(--muted);margin:4px}
 
-.input{
-  background:var(--panel);
-  padding:6px;
-}
-.replyPreview{
-  background:var(--reply);
-  padding:6px;
-  font-size:12px;
-  border-left:3px solid #25d366;
-  margin-bottom:4px;
-}
-.row{
-  display:flex;gap:6px;
-}
-.row input{
-  flex:1;border-radius:999px;padding:10px 14px;border:none
-}
-.row button{
-  width:40px;height:40px;border-radius:50%;
-  border:none;background:var(--out);font-size:18px
-}
+/* INPUT */
+.input{background:var(--panel);padding:6px}
+.replyPreview{display:none;background:#123f35;border-left:3px solid var(--accent);padding:6px;font-size:12px;margin-bottom:4px}
+.row{display:flex;gap:6px}
+.row input{flex:1;border-radius:999px;padding:10px 14px}
+.row button{width:40px;height:40px;border-radius:50%;background:var(--out);font-size:18px}
 
-.audio{
-  display:flex;align-items:center;gap:6px;
-}
-.bar{
-  height:4px;width:60px;background:#25d366;
-  animation:wave 1s infinite linear
-}
-@keyframes wave{
-  0%{width:10px}50%{width:60px}100%{width:10px}
-}
+/* AUDIO */
+.audio{display:flex;align-items:center;gap:6px}
+.bar{height:4px;width:60px;background:var(--accent);animation:wave 1s infinite linear}
+@keyframes wave{0%{width:10px}50%{width:60px}100%{width:10px}}
+
+/* STATUS VIEW */
+#statusView{display:none;position:fixed;inset:0;background:#000;z-index:9}
+.progress{height:3px;background:#333;margin:10px}
+.progress span{display:block;height:100%;width:0;background:#fff}
+#statusView img{width:100%;height:100%;object-fit:cover}
+
+/* CALL */
+#call{display:none;position:fixed;inset:0;background:#000;z-index:10;flex-direction:column;align-items:center;justify-content:center}
+#call h1{margin:10px}
+.end{background:#ff3b3b;color:#fff;padding:12px 20px;border-radius:999px;margin-top:20px}
+
+/* SWIPE */
+.fade{animation:fade .3s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 
 <body>
 
 <div class="top">
-  <span class="back" onclick="goBack()">←</span>
-  <div class="avatar">👤</div>
-  <div class="title">
-    <b id="chatName">WhatsApp</b><br>
-    <small>online</small>
-  </div>
+ <span class="back" onclick="goBack()">←</span>
+ <div class="avatar">👤</div>
+ <div class="title">
+  <b id="chatName">WhatsApp</b><br><small id="statusTxt">online</small>
+ </div>
+ <div class="actions">
+  <span onclick="openCall()">📞</span>
+ </div>
+</div>
+
+<div id="tabs">
+ <button class="active" onclick="showTab('chats')">Chats</button>
+ <button onclick="showTab('status')">Status</button>
 </div>
 
 <div id="list"></div>
+<div id="status" style="display:none"></div>
 
 <div id="chat">
-  <div id="msgs"></div>
-  <div class="typing" id="typing"></div>
-
-  <div class="input">
-    <div id="replyPreview" class="replyPreview" style="display:none"></div>
-    <div class="row">
-      <input id="text" placeholder="Mensagem">
-      <button onclick="send()">➤</button>
-      <button onclick="sendAudio()">🎤</button>
-    </div>
+ <div id="msgs"></div>
+ <div class="typing" id="typing"></div>
+ <div class="input">
+  <div id="replyPreview" class="replyPreview"></div>
+  <div class="row">
+   <input id="text" placeholder="Mensagem">
+   <button onclick="send()">➤</button>
+   <button onclick="sendAudio()">🎤</button>
   </div>
+ </div>
+</div>
+
+<!-- STATUS VIEW -->
+<div id="statusView" onclick="closeStatus()">
+ <div class="progress"><span id="bar"></span></div>
+ <img src="https://picsum.photos/800/1400">
+</div>
+
+<!-- CALL -->
+<div id="call">
+ <div class="avatar" style="width:80px;height:80px;font-size:40px">👤</div>
+ <h1 id="callName">Contato</h1>
+ <p>Chamando…</p>
+ <button class="end" onclick="closeCall()">Encerrar</button>
 </div>
 
 <script>
-const chats=[{n:'Ana',m:'Oi 😄',h:'21:50'}];
+/* DATA */
+const chats=[{n:'Ana',m:'Oi 😄',h:'21:50'},{n:'Carlos',m:'Chegando',h:'21:40'}];
+const statuses=[{n:'Ana'},{n:'Carlos'}];
+
 const list=document.getElementById('list');
+const statusList=document.getElementById('status');
 const chat=document.getElementById('chat');
 const msgs=document.getElementById('msgs');
 const back=document.querySelector('.back');
 const chatName=document.getElementById('chatName');
+const typing=document.getElementById('typing');
 const replyPreview=document.getElementById('replyPreview');
 let replyText=null;
 
+/* LOAD */
 function load(){
  list.innerHTML='';
  chats.forEach(c=>{
   const d=document.createElement('div');
   d.className='chat';
-  d.innerHTML=`<div class="avatar">👤</div>
-  <div class="meta"><b>${c.n}</b><br><span>${c.m}</span></div>
-  <time>${c.h}</time>`;
+  d.innerHTML=`<div class="avatar">👤</div><div class="meta"><b>${c.n}</b><br><span>${c.m}</span></div><time>${c.h}</time>`;
   d.onclick=()=>openChat(c.n);
   list.appendChild(d);
+ });
+ statusList.innerHTML='';
+ statuses.forEach(s=>{
+  const d=document.createElement('div');
+  d.className='chat';
+  d.innerHTML=`<div class="avatar">🟢</div><div class="meta"><b>${s.n}</b><br><span>Hoje</span></div>`;
+  d.onclick=openStatus;
+  statusList.appendChild(d);
  });
 }
 load();
 
-function openChat(n){
- chatName.textContent=n;
- list.style.display='none';
- chat.style.display='flex';
- back.style.display='inline';
- msgs.innerHTML='';
- receive("Oi! Arrasta uma mensagem 😉");
+/* TABS */
+function showTab(t){
+ document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+ if(t==='chats'){list.style.display='block';statusList.style.display='none';document.querySelectorAll('#tabs button')[0].classList.add('active')}
+ else{list.style.display='none';statusList.style.display='block';document.querySelectorAll('#tabs button')[1].classList.add('active')}
 }
 
+/* CHAT */
+function openChat(n){
+ chatName.textContent=n;
+ list.style.display='none';statusList.style.display='none';
+ chat.style.display='flex';back.style.display='inline';
+ msgs.innerHTML='';
+ receive('Oi! Arrasta uma mensagem 😉');
+}
 function goBack(){
  chat.style.display='none';
  list.style.display='block';
  back.style.display='none';
 }
 
+/* SEND */
 function send(){
  const t=document.getElementById('text');
  if(!t.value) return;
  addMsg(t.value,'out',true);
- t.value='';
- replyText=null;
- replyPreview.style.display='none';
- setTimeout(()=>receive("Ok 👍"),900);
+ t.value=''; replyText=null; replyPreview.style.display='none';
+ setTimeout(()=>receive('Ok 👍'),900);
 }
-
 function sendAudio(){
  const d=document.createElement('div');
  d.className='msg out audio';
  d.innerHTML='🎤 <div class="bar"></div> <small>0:07</small>';
- msgs.appendChild(d);
- msgs.scrollTop=msgs.scrollHeight;
- vibrate();
+ msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; vibrate();
 }
-
 function receive(text){
- document.getElementById('typing').textContent='digitando...';
- setTimeout(()=>{
-  document.getElementById('typing').textContent='';
-  addMsg(text,'in');
- },1200);
+ typing.textContent='digitando...';
+ setTimeout(()=>{typing.textContent=''; addMsg(text,'in')},1200);
 }
-
 function addMsg(text,type,seen){
- const d=document.createElement('div');
- d.className='msg '+type;
- if(replyText){
-  const r=document.createElement('div');
-  r.className='replyBox';
-  r.textContent=replyText;
-  d.appendChild(r);
- }
+ const d=document.createElement('div'); d.className='msg '+type;
+ if(replyText){const r=document.createElement('div'); r.className='replyBox'; r.textContent=replyText; d.appendChild(r)}
  d.appendChild(document.createTextNode(text));
- if(type==='out' && seen){
-  const s=document.createElement('span');
-  s.className='seen'; s.textContent='✓✓';
-  d.appendChild(s);
- }
+ if(type==='out'&&seen){const s=document.createElement('span'); s.className='seen'; s.textContent='✓✓'; d.appendChild(s)}
  enableReplyGesture(d,text);
- msgs.appendChild(d);
- msgs.scrollTop=msgs.scrollHeight;
+ msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
 
+/* REPLY SWIPE */
 function enableReplyGesture(el,text){
- let startX=0;
- el.addEventListener('touchstart',e=>{
-  startX=e.touches[0].clientX;
- },{passive:true});
+ let sx=0;
+ el.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
  el.addEventListener('touchmove',e=>{
-  const dx=e.touches[0].clientX-startX;
-  if(dx>0 && dx<80) el.style.transform=`translateX(${dx}px)`;
-  if(dx>70){
-    replyText=text;
-    replyPreview.textContent='Respondendo: '+text;
-    replyPreview.style.display='block';
-    vibrate();
-  }
+  const dx=e.touches[0].clientX-sx;
+  if(dx>0&&dx<80) el.style.transform=`translateX(${dx}px)`;
+  if(dx>70){replyText=text; replyPreview.textContent='Respondendo: '+text; replyPreview.style.display='block'; vibrate();}
  });
  el.addEventListener('touchend',()=>el.style.transform='');
 }
 
-function vibrate(){
- if(navigator.vibrate) navigator.vibrate(40);
+/* STATUS */
+function openStatus(){
+ const v=document.getElementById('statusView');
+ const bar=document.getElementById('bar');
+ v.style.display='block'; bar.style.width='0%';
+ let p=0; const i=setInterval(()=>{p+=2; bar.style.width=p+'%'; if(p>=100){clearInterval(i); closeStatus()}},80);
 }
+function closeStatus(){document.getElementById('statusView').style.display='none'}
+
+/* CALL */
+function openCall(){
+ document.getElementById('call').style.display='flex';
+ document.getElementById('callName').textContent=chatName.textContent;
+ vibrate();
+}
+function closeCall(){document.getElementById('call').style.display='none'}
+
+/* VIBRATE */
+function vibrate(){ if(navigator.vibrate) navigator.vibrate([60,30,60]) }
+
+/* GLOBAL SWIPE */
+let sx=0,sy=0;
+document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{
+ const dx=e.changedTouches[0].clientX-sx;
+ const dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)){
+  if(dx>0&&chat.style.display==='flex') goBack();
+ }
+},{passive:true});
 </script>
 
 </body>
