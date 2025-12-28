@@ -2,31 +2,59 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>WhatsApp Ultra (Simulação)</title>
+<title>WhatsApp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
 :root{
  --bg:#0b141a;--panel:#202c33;--in:#1f2c33;--out:#005c4b;
  --text:#fff;--muted:#8696a0;--seen:#34b7f1;--accent:#25d366;
+ --reply:#123f35;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui;overflow:hidden}
-button,input{border:none;outline:none}
+html,body{height:100%;background:var(--bg);font-family:system-ui;overflow:hidden;color:#fff}
 
-/* TOP */
-.top{height:56px;background:var(--panel);display:flex;align-items:center;gap:10px;padding:0 12px}
-.back{display:none;font-size:22px;cursor:pointer}
+/* ===== INTRO ===== */
+#intro{
+ position:fixed;inset:0;background:#000;z-index:999;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ animation:fadeIn .8s ease
+}
+#intro .logo{
+ width:120px;height:120px;border-radius:50%;
+ background:var(--accent);
+ display:grid;place-items:center;
+ font-size:60px;
+ animation:pulse 1.5s infinite
+}
+#intro h1{margin-top:20px;font-size:22px}
+#intro p{color:#aaa;margin-top:8px;font-size:14px}
+#intro small{margin-top:40px;color:#666}
+
+@keyframes pulse{
+ 0%{transform:scale(1)}
+ 50%{transform:scale(1.08)}
+ 100%{transform:scale(1)}
+}
+@keyframes fadeIn{
+ from{opacity:0}to{opacity:1}
+}
+
+/* ===== APP ===== */
+#app{display:none;height:100%}
+
+.top{height:56px;background:var(--panel);display:flex;align-items:center;padding:0 12px;gap:10px}
+.back{display:none;font-size:22px}
 .avatar{width:38px;height:38px;border-radius:50%;background:var(--out);display:grid;place-items:center}
 .title{flex:1}
 .title b{font-size:16px}
 .title small{font-size:12px;color:var(--muted)}
-.actions{display:flex;gap:12px;font-size:18px}
+.actions{font-size:18px}
 
-/* LIST */
 #tabs{display:flex;background:#111}
-#tabs button{flex:1;padding:10px;background:#111;color:#ccc}
-#tabs button.active{color:#fff;border-bottom:2px solid var(--accent)}
+#tabs button{flex:1;padding:10px;color:#ccc;background:none;border:none}
+#tabs .active{color:#fff;border-bottom:2px solid var(--accent)}
+
 #list,#status{height:calc(100% - 96px);overflow-y:auto}
 .chat{display:flex;gap:12px;padding:12px;border-bottom:1px solid #1a1a1a}
 .meta{flex:1}
@@ -34,61 +62,69 @@ button,input{border:none;outline:none}
 .meta span{font-size:13px}
 time{font-size:11px;color:var(--muted)}
 
-/* CHAT */
 #chat{display:none;height:calc(100% - 56px);flex-direction:column}
 #msgs{flex:1;padding:10px;overflow-y:auto}
-.msg{max-width:75%;padding:8px 12px;margin:6px 0;border-radius:10px;font-size:14px;color:white;position:relative}
+
+.msg{
+ max-width:75%;padding:8px 12px;margin:6px 0;border-radius:10px;
+ font-size:14px;animation:fade .15s ease;color:white
+}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+
 .in{background:var(--in)}
 .out{background:var(--out);margin-left:auto}
-.seen{font-size:10px;position:absolute;right:6px;bottom:2px;color:var(--seen)}
-.replyBox{background:#123f35;border-left:3px solid var(--accent);padding:4px 8px;font-size:12px;margin-bottom:4px;border-radius:6px}
+.seen{font-size:10px;color:var(--seen);float:right}
+
+.replyBox{
+ background:var(--reply);border-left:3px solid var(--accent);
+ padding:4px 8px;font-size:12px;margin-bottom:4px;border-radius:6px
+}
+
 .typing{font-size:12px;color:var(--muted);margin:4px}
 
-/* INPUT */
 .input{background:var(--panel);padding:6px}
-.replyPreview{display:none;background:#123f35;border-left:3px solid var(--accent);padding:6px;font-size:12px;margin-bottom:4px}
+.replyPreview{
+ display:none;background:var(--reply);border-left:3px solid var(--accent);
+ padding:6px;font-size:12px;margin-bottom:4px
+}
 .row{display:flex;gap:6px}
-.row input{flex:1;border-radius:999px;padding:10px 14px}
-.row button{width:40px;height:40px;border-radius:50%;background:var(--out);font-size:18px}
+.row input{flex:1;background:#111;border-radius:999px;padding:10px 14px;border:none;color:white}
+.row button{width:40px;height:40px;border-radius:50%;background:var(--out);border:none;color:white}
 
-/* AUDIO */
-.audio{display:flex;align-items:center;gap:6px}
-.bar{height:4px;width:60px;background:var(--accent);animation:wave 1s infinite linear}
-@keyframes wave{0%{width:10px}50%{width:60px}100%{width:10px}}
-
-/* STATUS VIEW */
-#statusView{display:none;position:fixed;inset:0;background:#000;z-index:9}
-.progress{height:3px;background:#333;margin:10px}
-.progress span{display:block;height:100%;width:0;background:#fff}
-#statusView img{width:100%;height:100%;object-fit:cover}
-
-/* CALL */
-#call{display:none;position:fixed;inset:0;background:#000;z-index:10;flex-direction:column;align-items:center;justify-content:center}
-#call h1{margin:10px}
-.end{background:#ff3b3b;color:#fff;padding:12px 20px;border-radius:999px;margin-top:20px}
-
-/* SWIPE */
-.fade{animation:fade .3s}
-@keyframes fade{from{opacity:0}to{opacity:1}}
+#call{
+ display:none;position:fixed;inset:0;background:#000;z-index:10;
+ flex-direction:column;align-items:center;justify-content:center
+}
+.end{background:#ff3b3b;padding:12px 20px;border-radius:999px;margin-top:20px}
 </style>
 </head>
 
 <body>
 
+<!-- INTRO -->
+<div id="intro" onclick="startApp()">
+ <div class="logo">💬</div>
+ <h1>WhatsApp</h1>
+ <p>Conectando…</p>
+ <small>Toque para continuar</small>
+</div>
+
+<!-- APP -->
+<div id="app">
+
 <div class="top">
  <span class="back" onclick="goBack()">←</span>
  <div class="avatar">👤</div>
  <div class="title">
-  <b id="chatName">WhatsApp</b><br><small id="statusTxt">online</small>
+  <b id="chatName">WhatsApp</b><br>
+  <small>online</small>
  </div>
- <div class="actions">
-  <span onclick="openCall()">📞</span>
- </div>
+ <div class="actions" onclick="openCall()">📞</div>
 </div>
 
 <div id="tabs">
- <button class="active" onclick="showTab('chats')">Chats</button>
- <button onclick="showTab('status')">Status</button>
+ <button class="active" onclick="tab(0)">Chats</button>
+ <button onclick="tab(1)">Status</button>
 </div>
 
 <div id="list"></div>
@@ -102,150 +138,145 @@ time{font-size:11px;color:var(--muted)}
   <div class="row">
    <input id="text" placeholder="Mensagem">
    <button onclick="send()">➤</button>
-   <button onclick="sendAudio()">🎤</button>
   </div>
  </div>
 </div>
 
-<!-- STATUS VIEW -->
-<div id="statusView" onclick="closeStatus()">
- <div class="progress"><span id="bar"></span></div>
- <img src="https://picsum.photos/800/1400">
-</div>
-
-<!-- CALL -->
 <div id="call">
  <div class="avatar" style="width:80px;height:80px;font-size:40px">👤</div>
- <h1 id="callName">Contato</h1>
+ <h2 id="callName"></h2>
  <p>Chamando…</p>
  <button class="end" onclick="closeCall()">Encerrar</button>
 </div>
 
-<script>
-/* DATA */
-const chats=[{n:'Ana',m:'Oi 😄',h:'21:50'},{n:'Carlos',m:'Chegando',h:'21:40'}];
-const statuses=[{n:'Ana'},{n:'Carlos'}];
+</div>
 
+<script>
+const chats=['Ana','Carlos'];
 const list=document.getElementById('list');
-const statusList=document.getElementById('status');
+const status=document.getElementById('status');
 const chat=document.getElementById('chat');
 const msgs=document.getElementById('msgs');
 const back=document.querySelector('.back');
 const chatName=document.getElementById('chatName');
 const typing=document.getElementById('typing');
 const replyPreview=document.getElementById('replyPreview');
-let replyText=null;
+let replyText=null,sx=0,sy=0;
+
+/* INTRO */
+function startApp(){
+ document.getElementById('intro').style.display='none';
+ document.getElementById('app').style.display='block';
+ if(navigator.vibrate) navigator.vibrate(40);
+}
 
 /* LOAD */
 function load(){
  list.innerHTML='';
- chats.forEach(c=>{
+ chats.forEach(n=>{
   const d=document.createElement('div');
   d.className='chat';
-  d.innerHTML=`<div class="avatar">👤</div><div class="meta"><b>${c.n}</b><br><span>${c.m}</span></div><time>${c.h}</time>`;
-  d.onclick=()=>openChat(c.n);
+  d.innerHTML=`<div class="avatar">👤</div>
+  <div class="meta"><b>${n}</b><br><span>Mensagem...</span></div>
+  <time>agora</time>`;
+  d.onclick=()=>openChat(n);
   list.appendChild(d);
  });
- statusList.innerHTML='';
- statuses.forEach(s=>{
-  const d=document.createElement('div');
-  d.className='chat';
-  d.innerHTML=`<div class="avatar">🟢</div><div class="meta"><b>${s.n}</b><br><span>Hoje</span></div>`;
-  d.onclick=openStatus;
-  statusList.appendChild(d);
- });
+ status.innerHTML='<div class="chat"><div class="avatar">🟢</div><div class="meta"><b>Meu status</b><br><span>Hoje</span></div></div>';
 }
 load();
 
-/* TABS */
-function showTab(t){
+function tab(i){
  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
- if(t==='chats'){list.style.display='block';statusList.style.display='none';document.querySelectorAll('#tabs button')[0].classList.add('active')}
- else{list.style.display='none';statusList.style.display='block';document.querySelectorAll('#tabs button')[1].classList.add('active')}
+ document.querySelectorAll('#tabs button')[i].classList.add('active');
+ list.style.display=i===0?'block':'none';
+ status.style.display=i===1?'block':'none';
 }
 
-/* CHAT */
 function openChat(n){
  chatName.textContent=n;
- list.style.display='none';statusList.style.display='none';
+ list.style.display='none';status.style.display='none';
  chat.style.display='flex';back.style.display='inline';
  msgs.innerHTML='';
- receive('Oi! Arrasta uma mensagem 😉');
+ demo();
 }
+
 function goBack(){
  chat.style.display='none';
  list.style.display='block';
  back.style.display='none';
 }
 
-/* SEND */
 function send(){
  const t=document.getElementById('text');
- if(!t.value) return;
- addMsg(t.value,'out',true);
- t.value=''; replyText=null; replyPreview.style.display='none';
- setTimeout(()=>receive('Ok 👍'),900);
-}
-function sendAudio(){
- const d=document.createElement('div');
- d.className='msg out audio';
- d.innerHTML='🎤 <div class="bar"></div> <small>0:07</small>';
- msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; vibrate();
-}
-function receive(text){
- typing.textContent='digitando...';
- setTimeout(()=>{typing.textContent=''; addMsg(text,'in')},1200);
-}
-function addMsg(text,type,seen){
- const d=document.createElement('div'); d.className='msg '+type;
- if(replyText){const r=document.createElement('div'); r.className='replyBox'; r.textContent=replyText; d.appendChild(r)}
- d.appendChild(document.createTextNode(text));
- if(type==='out'&&seen){const s=document.createElement('span'); s.className='seen'; s.textContent='✓✓'; d.appendChild(s)}
- enableReplyGesture(d,text);
- msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+ if(!t.value)return;
+ add(t.value,'out',true);
+ t.value='';
+ replyText=null;replyPreview.style.display='none';
+ setTimeout(()=>recv('Ok 💛'),900);
 }
 
-/* REPLY SWIPE */
-function enableReplyGesture(el,text){
- let sx=0;
+function add(text,type,seen){
+ const d=document.createElement('div');
+ d.className='msg '+type;
+ if(replyText){
+  const r=document.createElement('div');
+  r.className='replyBox';r.textContent=replyText;
+  d.appendChild(r);
+ }
+ d.appendChild(document.createTextNode(text));
+ if(type==='out'&&seen){
+  const s=document.createElement('span');
+  s.className='seen';s.textContent=' ✓✓';
+  d.appendChild(s);
+ }
+ enableSwipeReply(d,text);
+ msgs.appendChild(d);
+ msgs.scrollTop=msgs.scrollHeight;
+}
+
+function recv(text){
+ typing.textContent='digitando...';
+ setTimeout(()=>{typing.textContent='';add(text,'in')},1200);
+}
+
+function demo(){
+ recv('Oi 💛');
+ setTimeout(()=>recv('Bem-vindo(a)'),2000);
+ setTimeout(()=>recv('Simulação completa em HTML'),4000);
+ setTimeout(()=>recv('Com intro e tudo 😄'),6000);
+}
+
+function enableSwipeReply(el,text){
  el.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
  el.addEventListener('touchmove',e=>{
   const dx=e.touches[0].clientX-sx;
   if(dx>0&&dx<80) el.style.transform=`translateX(${dx}px)`;
-  if(dx>70){replyText=text; replyPreview.textContent='Respondendo: '+text; replyPreview.style.display='block'; vibrate();}
+  if(dx>70){
+   replyText=text;
+   replyPreview.textContent='Respondendo: '+text;
+   replyPreview.style.display='block';
+   if(navigator.vibrate) navigator.vibrate(40);
+  }
  });
  el.addEventListener('touchend',()=>el.style.transform='');
 }
 
-/* STATUS */
-function openStatus(){
- const v=document.getElementById('statusView');
- const bar=document.getElementById('bar');
- v.style.display='block'; bar.style.width='0%';
- let p=0; const i=setInterval(()=>{p+=2; bar.style.width=p+'%'; if(p>=100){clearInterval(i); closeStatus()}},80);
-}
-function closeStatus(){document.getElementById('statusView').style.display='none'}
-
-/* CALL */
 function openCall(){
  document.getElementById('call').style.display='flex';
  document.getElementById('callName').textContent=chatName.textContent;
- vibrate();
+ if(navigator.vibrate) navigator.vibrate([80,40,80]);
 }
 function closeCall(){document.getElementById('call').style.display='none'}
 
-/* VIBRATE */
-function vibrate(){ if(navigator.vibrate) navigator.vibrate([60,30,60]) }
-
-/* GLOBAL SWIPE */
-let sx=0,sy=0;
-document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+/* SWIPE BACK */
+document.addEventListener('touchstart',e=>{
+ sx=e.touches[0].clientX;sy=e.touches[0].clientY;
+},{passive:true});
 document.addEventListener('touchend',e=>{
  const dx=e.changedTouches[0].clientX-sx;
  const dy=e.changedTouches[0].clientY-sy;
- if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)){
-  if(dx>0&&chat.style.display==='flex') goBack();
- }
+ if(dx>90&&Math.abs(dx)>Math.abs(dy)&&chat.style.display==='flex') goBack();
 },{passive:true});
 </script>
 
