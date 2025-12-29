@@ -1,4 +1,4 @@
-# Whatsapp-Web-Recreation-
+# Whatsapp Web Recreation
 Whatsapp Pero Fanmade
 
 # WHATSAPP WEB RECREATION DEVS
