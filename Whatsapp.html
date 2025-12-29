@@ -2,109 +2,177 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>WhatsApp Ultra++</title>
+<title>WhatsApp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
 <style>
+/* =========================
+   TEMA / VARIÁVEIS
+========================= */
 :root{
  --bg:#0b141a;--panel:#202c33;--in:#1f2c33;--out:#005c4b;
  --text:#fff;--muted:#8696a0;--seen:#34b7f1;--accent:#25d366;
 }
 .light{
  --bg:#e9edef;--panel:#f0f2f5;--in:#fff;--out:#dcf8c6;
- --text:#111;--muted:#667781;--seen:#34b7f1;--accent:#25d366;
+ --text:#111;--muted:#667781;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui;overflow:hidden}
-button,input{border:none;outline:none;background:none;color:var(--text)}
 
-#intro,#verify{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center}
+/* =========================
+   INTRO / VERIFICAÇÃO
+========================= */
+#intro,#verify{
+ position:fixed;inset:0;z-index:99;
+ display:flex;flex-direction:column;align-items:center;justify-content:center
+}
 #intro{background:#000}
-.logo{width:120px;height:120px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:56px;animation:pulse 1.5s infinite}
+.logo{
+ width:120px;height:120px;border-radius:50%;
+ background:var(--accent);display:grid;place-items:center;
+ font-size:56px;animation:pulse 1.5s infinite
+}
 @keyframes pulse{50%{transform:scale(1.08)}}
-#intro p{color:#ccc;margin-top:10px}
 
 #verify{display:none;background:var(--bg)}
 .card{width:90%;max-width:360px;background:#111;border-radius:16px;padding:20px}
 .pin{display:flex;gap:8px;justify-content:center;margin:12px 0}
-.pin input{width:44px;height:52px;border-radius:10px;background:#000;text-align:center;font-size:22px}
-.verify-btn{width:100%;padding:12px;border-radius:999px;background:var(--accent);color:#000;font-weight:700}
-.loading{min-height:18px;color:#aaa;text-align:center}
+.pin input{
+ width:44px;height:52px;border-radius:10px;
+ background:#000;text-align:center;font-size:22px;color:#fff
+}
+.verify-btn{
+ width:100%;padding:12px;border-radius:999px;
+ background:var(--accent);color:#000;font-weight:700
+}
+.loading{text-align:center;color:#aaa}
 
+/* =========================
+   APP
+========================= */
 #app{display:none;height:100%}
-.top{height:56px;background:var(--panel);display:flex;align-items:center;padding:0 12px;gap:10px}
+.top{
+ height:56px;background:var(--panel);
+ display:flex;align-items:center;padding:0 12px;gap:10px
+}
 .back{display:none;font-size:22px}
-.avatar{width:38px;height:38px;border-radius:50%;background:var(--out);display:grid;place-items:center}
+.avatar{
+ width:38px;height:38px;border-radius:50%;
+ background:var(--out);display:grid;place-items:center
+}
 .title{flex:1}
 .title b{font-size:16px}
 .title small{font-size:12px;color:var(--muted)}
+
 .actions{display:flex;gap:10px}
 
 #tabs{display:flex;background:#111}
-#tabs button{flex:1;padding:10px;color:#ccc;font-weight:600}
+#tabs button{
+ flex:1;padding:10px;color:#ccc;font-weight:600
+}
 #tabs .active{color:#fff;border-bottom:2px solid var(--accent)}
 
 #search{padding:8px;background:var(--panel)}
-#search input{width:100%;background:#111;border-radius:999px;padding:10px 14px}
+#search input{
+ width:100%;background:#111;border-radius:999px;
+ padding:10px 14px;color:#fff
+}
 
-#list,#status{height:calc(100% - 144px);overflow:auto}
-.chat{display:flex;gap:12px;padding:12px;border-bottom:1px solid #1a1a1a;cursor:pointer}
+/* =========================
+   LISTA / STATUS / STORIES
+========================= */
+#list,#status,#stories{
+ height:calc(100% - 144px);
+ overflow:auto
+}
+.chat{
+ display:flex;gap:12px;padding:12px;
+ border-bottom:1px solid #1a1a1a;cursor:pointer
+}
 .chat:hover{background:#182229}
-.meta{flex:1}
 .meta b{font-size:15px}
 .meta span{font-size:13px;color:var(--muted)}
 
-#chat{display:none;height:calc(100% - 56px);flex-direction:column}
+.story{
+ display:flex;align-items:center;gap:10px;padding:12px
+}
+.story .avatar{
+ border:2px solid var(--accent)
+}
+
+/* =========================
+   CHAT
+========================= */
+#chat{
+ display:none;height:calc(100% - 56px);
+ flex-direction:column
+}
 #msgs{flex:1;padding:10px;overflow:auto}
-.msg{max-width:78%;padding:8px 12px;margin:6px 0;border-radius:10px;font-size:14px}
+.msg{
+ max-width:78%;padding:8px 12px;margin:6px 0;
+ border-radius:10px;font-size:14px
+}
 .in{background:var(--in)}
 .out{background:var(--out);margin-left:auto}
 .time{font-size:10px;color:var(--muted);margin-left:6px}
-.seen{font-size:10px;color:var(--seen);float:right}
-.reply{background:#123f35;border-left:3px solid var(--accent);padding:4px 8px;margin-bottom:4px;font-size:12px}
 
 .typing{font-size:12px;color:var(--muted);margin:4px}
 
+/* =========================
+   INPUT
+========================= */
 .input{background:var(--panel);padding:6px}
 .row{display:flex;gap:6px}
-.row input{flex:1;background:#111;border-radius:999px;padding:10px 14px}
-.row button{width:40px;height:40px;border-radius:50%;background:var(--out)}
+.row input{
+ flex:1;background:#111;border-radius:999px;
+ padding:10px 14px;color:#fff
+}
+.row button{
+ width:40px;height:40px;border-radius:50%;
+ background:var(--out);color:#fff
+}
 
-.audio{display:flex;align-items:center;gap:6px}
-.wave{display:flex;gap:2px}
-.wave span{width:3px;height:10px;background:#9be7c4;animation:wave 1s infinite}
-.wave span:nth-child(2){animation-delay:.2s}
-.wave span:nth-child(3){animation-delay:.4s}
-@keyframes wave{0%{height:4px}50%{height:14px}100%{height:4px}}
-
-.img-msg img{max-width:180px;border-radius:10px}
-
-#call{display:none;position:fixed;inset:0;background:#000;z-index:40;flex-direction:column;align-items:center;justify-content:center}
-.end{background:#ff3b3b;padding:12px 20px;border-radius:999px;margin-top:20px}
-
-.toggle{font-size:14px}
-.swipe-hint{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);font-size:12px;color:#888}
+/* =========================
+   NOTIFICAÇÃO
+========================= */
+#notify{
+ position:fixed;top:10px;left:50%;
+ transform:translateX(-50%);
+ background:#111;color:#fff;
+ padding:10px 14px;border-radius:12px;
+ display:none;z-index:200;font-size:14px
+}
 </style>
 </head>
 <body>
 
+<!-- INTRO -->
 <div id="intro" onclick="goVerify()">
  <div class="logo">💬</div>
  <p style="color:#ccc;margin-top:10px">Toque para continuar</p>
 </div>
 
+<!-- VERIFICAÇÃO -->
 <div id="verify">
- <div class="card" id="card">
+ <div class="card">
   <h3>Verificação</h3>
   <p>Digite o código</p>
   <div class="pin">
-   <input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1">
+   <input maxlength="1"><input maxlength="1">
+   <input maxlength="1"><input maxlength="1">
   </div>
-  <button class="verify-btn" onclick="checkPin()">Verificar</button>
-  <div class="loading" id="loading"></div>
+  <button class="verify-btn" onclick="enterApp()">Verificar</button>
+  <div class="loading">Aguarde...</div>
  </div>
 </div>
 
+<!-- NOTIFICAÇÃO -->
+<div id="notify"></div>
+
+<!-- APP -->
 <div id="app">
+
  <div class="top">
   <span class="back" onclick="goBack()">←</span>
   <div class="avatar">👤</div>
@@ -113,20 +181,23 @@ button,input{border:none;outline:none;background:none;color:var(--text)}
    <small id="statusTxt">online</small>
   </div>
   <div class="actions">
-    <button class="toggle" onclick="toggleTheme()">🌙</button>
-    <button onclick="openCall()">📞</button>
+   <button onclick="toggleTheme()">🌙</button>
   </div>
  </div>
 
  <div id="tabs">
   <button class="active" onclick="tab(0)">Chats</button>
   <button onclick="tab(1)">Status</button>
+  <button onclick="tab(2)">Stories</button>
  </div>
 
- <div id="search"><input placeholder="Pesquisar conversas" oninput="filterChats(this.value)"></div>
+ <div id="search">
+  <input placeholder="Pesquisar">
+ </div>
 
  <div id="list"></div>
  <div id="status" style="display:none"></div>
+ <div id="stories" style="display:none"></div>
 
  <div id="chat">
   <div id="msgs"></div>
@@ -140,119 +211,123 @@ button,input{border:none;outline:none;background:none;color:var(--text)}
  </div>
 </div>
 
-<div id="call">
- <div class="avatar" style="width:80px;height:80px;font-size:40px">👤</div>
- <h2 id="callName"></h2>
- <p>Chamando…</p>
- <button class="end" onclick="closeCall()">Encerrar</button>
-</div>
-
-<div class="swipe-hint">Deslize a mensagem →</div>
-
 <script>
-const contacts=[
- {id:'ana',name:'Ana'},
- {id:'carlos',name:'Carlos'},
- {id:'bia',name:'Bia'},
- {id:'joao',name:'João'}
-];
-const replies=[
- 'kkk verdade 😂','pera um pouco','tô vendo isso agora',
- 'mds sério?','já te respondo','entendi 💛','faz sentido',
- 'ok','calma','já volto','olha isso depois','fechado 👍'
+/* =========================
+   DADOS
+========================= */
+const contatos=['Ana','Carlos','Bia','João','Lucas','Marina'];
+const frases=[
+ 'oii','tô digitando ainda','pera aí','kkkk 😂',
+ 'já te respondo','mds','faz sentido',
+ 'entendi 💛','ok','calma','já volto'
 ];
 
 let current=null;
-const list=document.getElementById('list');
-const chat=document.getElementById('chat');
-const msgs=document.getElementById('msgs');
-const typing=document.getElementById('typing');
-const chatName=document.getElementById('chatName');
-const statusTxt=document.getElementById('statusTxt');
 
+/* =========================
+   FUNÇÕES BÁSICAS
+========================= */
+function goVerify(){
+ intro.style.display='none';
+ verify.style.display='flex';
+ navigator.vibrate?.(40);
+}
+function enterApp(){
+ verify.style.display='none';
+ app.style.display='block';
+ loadList();
+ showNotify('Conectado');
+}
 function hora(){
  const d=new Date();
- return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+ return d.getHours().toString().padStart(2,'0')+':'+
+        d.getMinutes().toString().padStart(2,'0');
 }
 
-function goVerify(){intro.style.display='none';verify.style.display='flex';navigator.vibrate?.(40)}
-function checkPin(){
- loading.textContent='Verificando...';
- setTimeout(()=>{
-  if(Math.random()>0.25){
-   verify.style.display='none';app.style.display='block';load();
-  }else{
-   loading.textContent='Código incorreto';
-   card.style.animation='shake .3s';
-   navigator.vibrate?.([60,40,60]);
-   setTimeout(()=>card.style.animation='',300);
-  }
- },1200);
-}
-
-function load(){
+/* =========================
+   LISTA / STORIES
+========================= */
+function loadList(){
  list.innerHTML='';
- contacts.forEach(c=>{
-  const d=document.createElement('div');
-  d.className='chat';
-  d.innerHTML=`<div class="avatar">👤</div><div class="meta"><b>${c.name}</b><br><span>Mensagem...</span></div>`;
-  d.onclick=()=>openChat(c);
-  list.appendChild(d);
+ stories.innerHTML='';
+ contatos.forEach(n=>{
+  list.innerHTML+=`
+   <div class="chat" onclick="openChat('${n}')">
+    <div class="avatar">👤</div>
+    <div class="meta"><b>${n}</b><br><span>Mensagem...</span></div>
+   </div>`;
+  stories.innerHTML+=`
+   <div class="story">
+    <div class="avatar">👤</div>
+    <div>${n}</div>
+   </div>`;
  });
- status.innerHTML='<div class="chat"><div class="avatar">🟢</div><div class="meta"><b>Meu status</b><br><span>Atualize seu status</span></div></div>';
 }
 
-function filterChats(q){
- [...list.children].forEach(c=>{
-  c.style.display=c.innerText.toLowerCase().includes(q.toLowerCase())?'':'none';
- });
-}
-
-function tab(i){
- list.style.display=i===0?'block':'none';
- status.style.display=i===1?'block':'none';
-}
-
-function openChat(c){
- current=c.id;
- chatName.textContent=c.name;
- list.style.display='none';chat.style.display='flex';
+/* =========================
+   CHAT
+========================= */
+function openChat(n){
+ current=n;
+ chatName.textContent=n;
+ list.style.display='none';
+ chat.style.display='flex';
  document.querySelector('.back').style.display='inline';
  msgs.innerHTML='';
  autoReply();
 }
 
 function goBack(){
- chat.style.display='none';list.style.display='block';
+ chat.style.display='none';
+ list.style.display='block';
  document.querySelector('.back').style.display='none';
 }
 
-function add(text,type){
+function addMsg(text,type){
  const d=document.createElement('div');
  d.className='msg '+type;
  d.innerHTML=`${text}<span class="time">${hora()}</span>`;
- msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+ msgs.appendChild(d);
+ msgs.scrollTop=msgs.scrollHeight;
 }
 
 function send(){
  if(!text.value)return;
- add(text.value,'out');text.value='';
+ addMsg(text.value,'out');
+ text.value='';
  autoReply();
 }
 
+/* =========================
+   AUTO RESPOSTA REALISTA
+========================= */
 function autoReply(){
  typing.textContent='digitando...';
  statusTxt.textContent='digitando...';
  setTimeout(()=>{
   typing.textContent='';
   statusTxt.textContent='online';
-  add(replies[Math.floor(Math.random()*replies.length)],'in');
- },800+Math.random()*2200);
+  addMsg(frases[Math.floor(Math.random()*frases.length)],'in');
+  showNotify(`${current} respondeu`);
+ },1000+Math.random()*2000);
 }
 
-function openCall(){call.style.display='flex';callName.textContent=chatName.textContent; navigator.vibrate?.([80,40,80]);}
-function closeCall(){call.style.display='none'}
-function toggleTheme(){document.body.classList.toggle('light');}
+/* =========================
+   OUTROS
+========================= */
+function tab(i){
+ list.style.display=i===0?'block':'none';
+ status.style.display=i===1?'block':'none';
+ stories.style.display=i===2?'block':'none';
+}
+function toggleTheme(){
+ document.body.classList.toggle('light');
+}
+function showNotify(t){
+ notify.textContent=t;
+ notify.style.display='block';
+ setTimeout(()=>notify.style.display='none',2000);
+}
 </script>
 
 </body>
